@@ -74,7 +74,7 @@ for month in months:
         for scene in scenes:
             print(f"    {scene.name}  {cast_coverage(scene, available_characters):.0%}")
             
-  def load_rehearsal_dates(filepath):
+def load_rehearsal_dates(filepath):
     with open(filepath, 'r') as f:
         reader = csv.DictReader(f)
         return [row['date'].strip() for row in reader]
