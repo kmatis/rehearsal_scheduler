@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import csv
+
 class Person:
     def __init__(self, name, conflicts, characters):
         self.name = name
@@ -71,3 +73,27 @@ for month in months:
         print(f"    Available actors: {', '.join(a.name for a in available_actors)}")
         for scene in scenes:
             print(f"    {scene.name}  {cast_coverage(scene, available_characters):.0%}")
+            
+  def load_rehearsal_dates(filepath):
+    with open(filepath, 'r') as f:
+        reader = csv.DictReader(f)
+        return [row['date'].strip() for row in reader]
+
+rehearsal_dates = load_rehearsal_dates('imports/rehearsal_dates.csv')
+
+print("\nScene Rehearsal Report:")
+for scene in scenes:
+    full_days = 0
+    partial_days = 0
+    for date in rehearsal_dates:
+        available_actors = [a for a in actors if date not in a.conflicts]
+        available_characters = {c for a in available_actors for c in a.characters}
+        coverage = cast_coverage(scene, available_characters)
+        if coverage == 1.0:
+            full_days += 1
+        elif coverage > 0:
+            partial_days += 1
+    missing = scene.characters - all_characters
+    missing_str = f" (missing: {', '.join(missing)})" if missing else ""
+    print(f"  {scene.name}: {full_days} full rehearsal days, {partial_days} partial rehearsal days{missing_str}")
+            
